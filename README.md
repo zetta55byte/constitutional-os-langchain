@@ -2,6 +2,43 @@
 
 ### Powered by Constitutional OS
 
+```
+Agent
+  │
+  ▼
+Proposed Action
+  │
+  ▼
+┌─────────────────────────────────────┐
+│         Governance Check            │
+│                                     │
+│  M1 Safety       M2 Reversibility   │
+│  M3 Pluralism    M4 Human Primacy   │
+└──────────────┬──────────────────────┘
+               │
+       ┌───────┴───────┐
+       ▼               ▼
+    ALLOW            DENY
+       │               │
+       ▼               ▼
+  Execute Tool    Reversible Delta
+       │               │
+       └───────┬───────┘
+               ▼
+       Continuity Chain
+       (append-only log)
+```
+
+---
+
+## Why This Matters
+
+**Every AI agent that can take actions needs a governance layer.** Without one, you have no way to know what your agent did, why it was allowed, or how to undo it. Constitutional OS provides the substrate: every proposed action passes through four canonical membranes before execution, and every decision — whether allowed or denied — is logged to an append-only continuity chain. This means your agent's behavior is deterministic, auditable, and rollback-ready by design, not by accident.
+
+**Reversibility is not optional at scale.** When an agent takes a wrong action in production — and it will — you need to be able to undo it precisely, not restore from a backup. The reversible delta calculus in Constitutional OS ensures that every ratified action carries its own inverse. You can roll back one action, or ten, or a hundred, without touching anything else. Combined with the continuity chain, this gives you something that doesn't exist anywhere else in the agent ecosystem: a formal audit trail with guaranteed rollback semantics.
+
+---
+
 This repository provides a minimal, production-ready template for building **governed AI agents** using:
 
 - **LangChain**
@@ -65,6 +102,15 @@ Agent tries to run `rm -rf /`. Membrane blocks it. Returns:
   "reversible_delta": { "..." : "..." },
   "continuity_event_id": "c7f1..."
 }
+```
+
+Then prints the continuity chain:
+
+```
+── Continuity Chain (last entries) ─────────────────────
+  [  0] 2026-03-18T...  tool_call_blocked    blocked    Agent attempted rm -rf /
+  [  1] 2026-03-18T...  membrane_check       deferred   M2 reversibility engaged
+─────────────────────────────────────────────────────────
 ```
 
 ---
