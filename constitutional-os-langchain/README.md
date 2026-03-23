@@ -1,46 +1,53 @@
-# constitutional-os-langchain
+# constitutional-os
 
-**Constitutional OS governance for LangChain agents.**
+**A formal runtime for epistemic-governance systems.**
 
-Wraps any LangChain tool with membrane-checked governance, continuity chain
-logging, and reversible delta support — in one line of code.
-
-[![PyPI](https://img.shields.io/pypi/v/constitutional-os-langchain)](https://pypi.org/project/constitutional-os-langchain/)
-[![RFC](https://img.shields.io/badge/RFC-0001-blue)](https://github.com/zetta55byte/constitutional-os/blob/main/rfc/RFC-0001-core-spec.md)
-[![Constitutional OS](https://img.shields.io/badge/governed%20by-Constitutional%20OS-purple)](https://github.com/zetta55byte/constitutional-os)
+[![PyPI](https://img.shields.io/pypi/v/constitutional-os)](https://pypi.org/project/constitutional-os/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://python.org)
+[![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.19045723.svg)](https://zenodo.org/records/19075163)
 
 ---
 
-## What it does
+## What it is
 
-Every tool call your agent makes is:
-
-- **Membrane-checked** before execution (safety, reversibility, pluralism, human primacy)
-- **Logged** to an append-only continuity chain
-- **Blocked** if it violates a membrane
-- **Deferred** if it requires human approval
-- **Reversible** — rollback available on any ratified action
+`constitutional-os` implements a two-layer architecture for building systems that
+are both **epistemically grounded** and **constitutionally governed**:
 
 ```
-Agent proposes action
-       ↓
-Constitutional OS governance check
-       ↓
-M1 Safety → M2 Reversibility → M3 Pluralism → M4 Human Primacy
-       ↓
-verdict: pass | block | defer
-       ↓
-Execute (if pass) / Stop (if block) / Wait (if defer)
-       ↓
-Logged to continuity chain
+Reality Layer  ──→  Reliability OS  ──→  Constitutional OS  ──→  Reality Layer
+                    (what is true?)       (what is allowed?)
 ```
+
+**Reliability OS** evaluates reality: it loads behavioral profiles, runs eval
+bundles, detects drift, and generates forecasts with recommended actions.
+
+**Constitutional OS** governs change: it applies typed, reversible deltas
+through a formal lifecycle — invariant checks, four canonical membranes,
+a human veto window, and an append-only continuity chain.
+
+The two layers interlock through a single interface event (`ActionRecommended`)
+and compose into a single update operator **Φ = G ∘ E** over the global
+meta-state **Σ = (Σ_R, Σ_C, Σ_X)**.
 
 ---
 
 ## Install
 
 ```bash
-pip install constitutional-os-langchain
+pip install constitutional-os
+
+# With YAML profile support
+pip install constitutional-os[yaml]
+
+# With HTTP API surface
+pip install constitutional-os[api]
+
+# With visualization (basin maps, Lyapunov plots)
+pip install constitutional-os[viz]
+
+# Everything
+pip install constitutional-os[all]
 ```
 
 ---
@@ -48,108 +55,267 @@ pip install constitutional-os-langchain
 ## Quick start
 
 ```python
-from constitutional_langchain import GovernedTool, GovernanceClient
-from langchain.tools import DuckDuckGoSearchRun
+from constitutional_os import boot, phi
 
-# Connect to governance API
-client = GovernanceClient(
-    base_url="https://constitutional-os-production.up.railway.app"
+# Boot the runtime — initializes Σ = (Σ_R, Σ_C, Σ_X)
+store, dispatcher = boot()
+
+# Load a behavioral profile into Σ_R
+from constitutional_os import ProfileLoader, ProfileLoaded
+
+profile = ProfileLoader.from_dict({
+    "id": "agent.assistant",
+    "name": "AI Assistant",
+    "version": "1.0.0",
+    "metrics": [
+        {"name": "response_quality", "threshold": 0.70,
+         "baseline": 0.88, "direction": "higher_is_better"},
+    ],
+    "evals": [
+        {"bundle_id": "core.integrity", "required": True, "weight": 1.0},
+    ],
+})
+store.current.profiles.register(profile)
+state = dispatcher.dispatch(store.current, ProfileLoaded(
+    profile_id=profile.id, profile_name=profile.name, version=profile.version,
+))
+store.apply(state)
+
+# Run Φ = G ∘ E — one epistemic-governance cycle
+from constitutional_os.evals.runner  import EvalRunner
+from constitutional_os.forecast.engine import ForecastEngine
+
+result = phi(
+    state        = store.current,
+    eval_runner  = EvalRunner(),
+    forecast_eng = ForecastEngine(),
+    dispatcher   = dispatcher,
+    history_map  = {},   # inject real metric histories here
 )
-
-# Wrap any LangChain tool
-search         = DuckDuckGoSearchRun()
-governed       = GovernedTool(real_tool=search, client=client)
-
-# Every call is now governance-checked
-result = governed.run("latest AI governance research")
+print(f"Verdict: {result.governance_result.verdict}")
+print(f"Fixed point: {result.is_fixed_point}")
 ```
 
 ---
 
-## Demo output
+## Core concepts
 
-```
-Demo 1: Safe search action
-──────────────────────────────────────────
-🟢 PASSED Constitutional OS governance
-   Tool:    search
-   Log ID:  42
+### Profiles
 
-Demo 2: Unsafe delete action (critical + irreversible)
-──────────────────────────────────────────
-🔴 BLOCKED by Constitutional OS
-   Tool:    delete_all_users
-   Reason:  Critical autonomous change blocked by M1 safety membrane
-   Log ID:  43
-   Membranes:
-     ✗ M1_safety: Critical autonomous changes are blocked
+A **profile** is a versioned YAML/dict spec describing expected behavior:
 
-Demo 3: Significant config change
-──────────────────────────────────────────
-🟡 DEFERRED by Constitutional OS — human approval required
-   Tool:    update_global_config
-   Reason:  Significant autonomous change requires human review
-   Log ID:  44
+```yaml
+id: agent.assistant
+version: 1.2.0
+metrics:
+  - name: response_quality
+    threshold: 0.70
+    baseline: 0.88
+    direction: higher_is_better
+evals:
+  - bundle_id: core.integrity
+    required: true
 ```
 
----
+### Invariants
 
-## Use with a LangChain agent
+**Invariants** are predicates that must hold at all times.
+Five are built in; you can register your own:
 
 ```python
-from langchain.agents import initialize_agent, AgentType
-from langchain_openai import ChatOpenAI
-from constitutional_langchain import GovernedTool, GovernanceClient
+from constitutional_os import Invariant, InvariantSeverity, InvariantResult
 
-client = GovernanceClient()
-llm    = ChatOpenAI(model="gpt-4")
-
-# Wrap all your tools
-tools = [
-    GovernedTool(real_tool=my_tool_1, client=client),
-    GovernedTool(real_tool=my_tool_2, client=client, severity="significant"),
-    GovernedTool(real_tool=my_tool_3, client=client, reversible=False),
-]
-
-agent = initialize_agent(
-    tools,
-    llm,
-    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-    verbose=True,
+my_inv = Invariant(
+    id          = "custom.no_empty_profiles",
+    name        = "No Empty Profiles",
+    description = "Every profile must have at least one metric",
+    fn          = lambda state: InvariantResult(
+        "custom.no_empty_profiles",
+        all(len(p.metrics) > 0 for p in state.profiles.all()),
+        reason = "Empty profile detected",
+    ),
+    severity    = InvariantSeverity.ERROR,
 )
+store.current.invariants.register(my_inv)
+```
 
-# Every tool call is now governed
-agent.run("Do something that requires multiple tools")
+### The four membranes
+
+Every proposed delta passes through four canonical membranes before execution:
+
+| Membrane | Blocks when |
+|----------|-------------|
+| **M1 Safety** | Critical autonomous changes, or constitutional-scope changes without human direction |
+| **M2 Reversibility** | Irreversible autonomous changes (defers to human review) |
+| **M3 Pluralism** | Changes that would eliminate future option space (lock-in types) |
+| **M4 Human Primacy** | Significant, global, or irreversible autonomous changes |
+
+```python
+from constitutional_os import ProposedDelta
+
+delta  = ProposedDelta(
+    delta_type = "update_config",
+    payload    = {"temperature": 0.7},
+    autonomy   = "autonomous",
+    severity   = "significant",
+    reversible = True,
+    scope      = "local",
+)
+result = store.current.membranes.check_all(store.current, delta)
+print(result.verdict)   # PASS | BLOCK | DEFER
+```
+
+### Lyapunov stability
+
+The **governance energy** V(Σ) measures distance from a constitutional-epistemic attractor:
+
+```python
+from constitutional_os import lyapunov, stability_report
+
+v = lyapunov(store.current)
+print(f"V(Σ) = {v.total:.4f}")
+print(f"Fixed point: {v.is_fixed_point}")
+print(f"Components: {v.components}")
+
+report = stability_report(store.current)
+print(report.summary)
+```
+
+V(Σ) = 0 iff the system is at a fixed point: no drift, no pending
+proposals, no invariant tension, no unresolved recommendations.
+
+### A-safety theorem
+
+For any set of recommendations from the forecast engine, `check_a_safety`
+verifies constructively that every proposed delta satisfies both
+invariant preservation and membrane constraints:
+
+```python
+from constitutional_os import check_a_safety
+
+result = check_a_safety(store.current, recommendations)
+print(result.theorem_holds)  # True → no counterexample found
+print(result.proof)          # formal proof trace
+```
+
+### Delta calculus
+
+All state changes are **typed, reversible deltas**:
+
+```python
+from constitutional_os import Delta, DeltaType
+from constitutional_os.actions.engine import DeltaEngine
+
+delta = Delta(
+    delta_type = DeltaType.LOAD_PROFILE.value,
+    payload    = {"profile": profile.to_dict()},
+    author     = "operator",
+    rationale  = "Loading updated behavioral spec",
+)
+engine    = DeltaEngine()
+new_state = engine.apply(store.current, delta)
+# Undo it:
+old_state = engine.inverse(new_state, delta)
 ```
 
 ---
 
-## Severity levels
+## Command-line console
 
-| Severity | Triggers |
-|----------|----------|
-| `trivial` | Passes all membranes |
-| `normal` | Standard governance check |
-| `significant` | Triggers M4 human primacy — deferred |
-| `critical` | Blocked by M1 safety membrane |
+```bash
+# Boot and show status
+constitutional-os boot
+
+# Load a profile
+constitutional-os profile load my_profile.yaml
+
+# Run eval bundle
+constitutional-os eval run core.health
+
+# Check invariants
+constitutional-os invariants
+
+# Check membranes against a delta
+constitutional-os membranes update_config significant
+
+# Run Φ = G ∘ E and show result
+constitutional-os recommend
+
+# Full stability report: V(Σ), basin, separatrix, A-safety
+constitutional-os stability
+
+# Tail continuity log
+constitutional-os log 20
+
+# Rollback N steps
+constitutional-os rollback --steps 2
+```
 
 ---
 
-## The four membranes
+## Architecture
 
-| Membrane | Blocks/defers when |
-|----------|--------------------|
-| M1 Safety | `severity=critical` + `autonomy=autonomous` |
-| M2 Reversibility | `reversible=False` + `autonomy=autonomous` |
-| M3 Pluralism | Action would eliminate future option space |
-| M4 Human Primacy | `severity=significant/critical` or `reversible=False` |
+```
+constitutional_os/
+├── runtime/
+│   ├── state.py        # Global meta-state Σ = (Σ_R, Σ_C, Σ_X)
+│   ├── events.py       # Event types + dispatcher
+│   ├── boot.py         # Boot sequence
+│   ├── operators.py    # Φ = G ∘ E, epistemic + governance operators
+│   ├── theory.py       # Lyapunov V(Σ), A-safety, basin analysis
+│   ├── loop.py         # Background event loop
+│   └── visualization.py # Basin maps, Lyapunov plots
+│
+├── profiles/
+│   └── loader.py       # Profile DSL, registry, diffing
+│
+├── invariants/
+│   └── engine.py       # Invariant engine + built-in library (5 invariants)
+│
+├── membranes/
+│   └── engine.py       # Membrane engine + four canonical membranes
+│
+├── evals/
+│   └── runner.py       # Eval bundles, runner, reports, history
+│
+├── forecast/
+│   └── engine.py       # Forecast projections, drift detection, recommendations
+│
+├── actions/
+│   ├── deltas.py       # Delta calculus + continuity chain
+│   └── engine.py       # Delta apply/rollback over MetaState
+│
+└── console/
+    ├── cli.py          # Command-line interface
+    └── api.py          # FastAPI HTTP/WebSocket surface
+```
 
 ---
 
-## Links
+## Formal foundations
 
-- **Constitutional OS:** https://github.com/zetta55byte/constitutional-os
-- **RFC-0001:** https://github.com/zetta55byte/constitutional-os/blob/main/rfc/RFC-0001-core-spec.md
-- **Paper:** https://zenodo.org/records/19075163
-- **Live API:** https://constitutional-os-production.up.railway.app/
-- **PyPI:** https://pypi.org/project/constitutional-os/
+The mathematical foundations are described in:
+
+> *Constitutional OS: A Formal Governance Substrate for AI Systems*  
+> Zenodo, March 2026. DOI: [10.5281/zenodo.19045723](https://zenodo.org/records/19045723)
+
+Key results implemented in this library:
+
+**Theorem 1 (Runtime Safety):** For any ratified delta δ,
+`valid(Σ) ⟹ valid(δ(Σ))` — invariants are preserved under ratified transitions.
+
+**Theorem 2 (Runtime Reversibility):** Every ratified delta has an inverse in the
+delta groupoid, enabling rollback to any prior state.
+
+**Theorem 3 (Lyapunov Stability):** The governance energy V(Σ) is non-increasing
+under Φ = G ∘ E. Fixed points are constitutional-epistemic attractors.
+
+**Theorem 4 (A-Safety):** For all δ ∈ A(F) (recommendations from the forecast
+engine): `InvOK(Σ, δ) ∧ MemOK(δ) ⟹ safe(δ)`.
+Proved constructively by `check_a_safety()`.
+
+---
+
+## License
+
+Apache 2.0. See [LICENSE](LICENSE).
