@@ -1,0 +1,10 @@
+{
+  "user_count": 42,
+  "admin_users": 5,
+  "policies": 17,
+  "overpermissioned_policies": 3,
+  "inactive_access_keys": 8,
+  "mfa_disabled_users": 12,
+  "cross_account_trusts": 2,
+  "roles": 23
+}

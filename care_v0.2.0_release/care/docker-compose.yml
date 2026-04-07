@@ -1,0 +1,99 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CARE — Curvature-Aware Risk Engine
+# docker compose up            → API server on :8000
+# docker compose --profile notebook up  → API + Jupyter on :8888
+# docker compose --profile full up      → API + Jupyter + mock COS on :9000
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── CARE API server ─────────────────────────────────────────────────────────
+  care:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: care:0.1.0
+    container_name: care-engine
+    ports:
+      - "${CARE_PORT:-8000}:8000"
+    environment:
+      CARE_HOST:               "0.0.0.0"
+      CARE_PORT:               "${CARE_PORT:-8000}"
+      CARE_CURVATURE_BACKEND:  "${CARE_CURVATURE_BACKEND:-numpy}"
+      CARE_COS_ENABLED:        "${CARE_COS_ENABLED:-false}"
+      CARE_COS_ENDPOINT:       "${CARE_COS_ENDPOINT:-http://cos-runtime:9000}"
+      CARE_SOFT_LAMBDA:        "${CARE_SOFT_LAMBDA:-1.0}"
+      CARE_HIGH_RISK:          "${CARE_HIGH_RISK:-10.0}"
+      CARE_MAX_STATE_DIM:      "${CARE_MAX_STATE_DIM:-64}"
+      LOG_LEVEL:               "${LOG_LEVEL:-INFO}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - care-net
+
+  # ── Jupyter notebook (optional) ─────────────────────────────────────────────
+  # Start with: docker compose --profile notebook up
+  # Access at:  http://localhost:8888 (no token/password required in dev mode)
+  notebook:
+    image: jupyter/minimal-notebook:python-3.11
+    container_name: care-notebook
+    ports:
+      - "${NOTEBOOK_PORT:-8888}:8888"
+    volumes:
+      # Mount the whole project so notebook edits persist to host
+      - .:/home/jovyan/care:delegated
+    working_dir: /home/jovyan/care
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      # Forward CARE settings so notebook cells can call the API
+      CARE_API_URL: "http://care:8000"
+    command: >
+      bash -c "
+        pip install -e '.[viz]' -q &&
+        jupyter lab
+          --NotebookApp.token=''
+          --NotebookApp.password=''
+          --ip=0.0.0.0
+          --port=8888
+          --no-browser
+          --notebook-dir=/home/jovyan/care/examples/iam_demo
+      "
+    depends_on:
+      care:
+        condition: service_healthy
+    profiles:
+      - notebook
+    networks:
+      - care-net
+
+  # ── Mock Constitutional OS runtime (optional) ────────────────────────────────
+  # A minimal echo server that accepts POST /delta/apply and returns 200.
+  # Lets you test CARE_COS_ENABLED=true without a real COS deployment.
+  # Start with: docker compose --profile full up
+  cos-runtime:
+    image: mendhak/http-https-echo:latest
+    container_name: cos-runtime
+    ports:
+      - "${COS_PORT:-9000}:8080"
+    environment:
+      HTTP_PORT: "8080"
+    profiles:
+      - full
+    networks:
+      - care-net
+
+# ── Shared network ──────────────────────────────────────────────────────────
+# All services share care-net so CARE can resolve "cos-runtime" by name.
+# This is future-proofed for plugging in a live Constitutional OS Runtime.
+networks:
+  care-net:
+    name: care-net
+    driver: bridge

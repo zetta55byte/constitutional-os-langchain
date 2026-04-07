@@ -1,0 +1,66 @@
+# ── Version control ────────────────────────────────────────────────────────
+.git
+.gitignore
+.github
+
+# ── Python build artefacts ──────────────────────────────────────────────────
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info
+dist/
+build/
+wheels/
+
+# ── Virtual environments ────────────────────────────────────────────────────
+.venv
+venv/
+env/
+.env
+.env.*
+
+# ── Test / lint / type-check artefacts ──────────────────────────────────────
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.tox
+.nox
+htmlcov/
+.coverage
+coverage.xml
+
+# ── Docs ────────────────────────────────────────────────────────────────────
+docs/
+site/
+*.rst
+
+# ── Repo / release artefacts ─────────────────────────────────────────────────
+*.tar.gz
+*.zip
+*.whl
+CHANGELOG.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+
+# ── Secrets — never in the image ────────────────────────────────────────────
+*.pem
+*.key
+credentials.json
+aws_credentials
+kubeconfig
+.aws/
+.kube/
+
+# ── Notebook execution artefacts ────────────────────────────────────────────
+*.ipynb_checkpoints
+examples/iam_demo/notebook_executed.ipynb
+examples/iam_demo/eigenvalues_*.png
+examples/iam_demo/risk_*.png
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store

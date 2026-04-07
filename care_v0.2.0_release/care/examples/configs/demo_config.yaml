@@ -1,0 +1,19 @@
+# CARE demo configuration
+# Copy to .env or set as environment variables
+
+CARE_HOST: "0.0.0.0"
+CARE_PORT: 8000
+CARE_RELOAD: "true"
+LOG_LEVEL: "INFO"
+
+# Curvature backend: numpy | jax | jax-xla
+CARE_CURVATURE_BACKEND: "numpy"
+
+# Constitutional OS integration (disabled by default)
+CARE_COS_ENABLED: "false"
+CARE_COS_ENDPOINT: "http://localhost:9000"
+
+# Risk thresholds
+CARE_SOFT_LAMBDA: "1.0"
+CARE_HIGH_RISK: "10.0"
+CARE_MAX_STATE_DIM: "64"
