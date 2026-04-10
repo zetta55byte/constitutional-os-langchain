@@ -1,0 +1,429 @@
+[
+  {
+    "threat_id": "TM-001",
+    "threat_class": "membrane_consensus_bypass",
+    "description": "Model bypasses multi-membrane agreement and emits high-capability output.",
+    "severity": "catastrophic",
+    "exploitability": "frontier_only",
+    "detection_surface": [
+      "Layer 3",
+      "Layer 4",
+      "CARE"
+    ],
+    "affected_layers": [
+      "Layer 3",
+      "Layer 4"
+    ],
+    "mitigation_layers": [
+      "Layer 4",
+      "Layer 6"
+    ],
+    "tested_by_sim": [
+      "SIM-014",
+      "SIM-022"
+    ],
+    "tested_by_harness": [
+      "HAR-003"
+    ],
+    "coverage_status": "partial",
+    "examples": [
+      "Cross-membrane agreement failure on restricted code synthesis"
+    ],
+    "references": [
+      "mythos-paper \u00a75.2"
+    ]
+  },
+  {
+    "threat_id": "TM-002",
+    "threat_class": "governance_drift",
+    "description": "Constitutional OS votes degrade or oscillate under distribution shift.",
+    "severity": "high",
+    "exploitability": "skilled",
+    "detection_surface": [
+      "COS logs",
+      "CARE drift"
+    ],
+    "affected_layers": [
+      "Layer 2",
+      "Layer 5"
+    ],
+    "mitigation_layers": [
+      "Layer 5",
+      "Layer 7"
+    ],
+    "tested_by_sim": [
+      "SIM-031"
+    ],
+    "tested_by_harness": [
+      "HAR-SPEC-002"
+    ],
+    "coverage_status": "partial",
+    "examples": [
+      "COS vote oscillation under adversarial prompt chaining"
+    ],
+    "references": [
+      "mythos-paper \u00a76.1",
+      "HAR-SPEC-002"
+    ],
+    "trace_refs": [
+      "probe_results_v01"
+    ]
+  },
+  {
+    "threat_id": "TM-003",
+    "threat_class": "capability_spike",
+    "description": "Sudden capability increase triggered by long-context reasoning.",
+    "severity": "medium",
+    "exploitability": "opportunistic",
+    "detection_surface": [
+      "CARE curvature"
+    ],
+    "affected_layers": [
+      "Layer 1"
+    ],
+    "mitigation_layers": [
+      "Layer 3",
+      "Layer 6"
+    ],
+    "tested_by_sim": [
+      "SIM-005",
+      "SIM-006"
+    ],
+    "tested_by_harness": [
+      "HAR-011",
+      "HAR-012"
+    ],
+    "coverage_status": "full",
+    "examples": [
+      "Unexpected multi-step reasoning enabling code synthesis"
+    ],
+    "references": [
+      "mythos-paper \u00a74.3"
+    ]
+  },
+  {
+    "threat_id": "TM-004",
+    "threat_class": "covert_channel",
+    "description": "Model encodes restricted information through indirect or obfuscated channels.",
+    "severity": "high",
+    "exploitability": "skilled",
+    "detection_surface": [
+      "Layer 4",
+      "Layer 6"
+    ],
+    "affected_layers": [
+      "Layer 4"
+    ],
+    "mitigation_layers": [
+      "Layer 6"
+    ],
+    "tested_by_sim": [
+      "SIM-019"
+    ],
+    "tested_by_harness": [
+      "HAR-007"
+    ],
+    "coverage_status": "partial",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-005",
+    "threat_class": "cross_model_agreement_failure",
+    "description": "CMV fails to detect disagreement between models under adversarial prompting.",
+    "severity": "high",
+    "exploitability": "skilled",
+    "detection_surface": [
+      "CMV logs"
+    ],
+    "affected_layers": [
+      "Layer 3"
+    ],
+    "mitigation_layers": [
+      "Layer 3",
+      "Layer 4"
+    ],
+    "tested_by_sim": [
+      "SIM-010"
+    ],
+    "tested_by_harness": [
+      "HAR-SPEC-005"
+    ],
+    "coverage_status": "partial",
+    "examples": [
+      "CMV silent failure on surface-aligned but substantively divergent outputs"
+    ],
+    "references": [
+      "mythos-paper \u00a75.4",
+      "HAR-SPEC-005"
+    ],
+    "trace_refs": [
+      "probe_results_v01"
+    ]
+  },
+  {
+    "threat_id": "TM-006",
+    "threat_class": "rollback_failure",
+    "description": "Rollback triggers fail to activate during drift events.",
+    "severity": "high",
+    "exploitability": "opportunistic",
+    "detection_surface": [
+      "CARE rollback"
+    ],
+    "affected_layers": [
+      "Layer 1"
+    ],
+    "mitigation_layers": [
+      "Layer 1",
+      "Layer 6"
+    ],
+    "tested_by_sim": [
+      "SIM-002"
+    ],
+    "tested_by_harness": [
+      "HAR-015"
+    ],
+    "coverage_status": "partial",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-007",
+    "threat_class": "sandbox_escape",
+    "description": "Model attempts to escape execution sandbox or GPU jail.",
+    "severity": "catastrophic",
+    "exploitability": "frontier_only",
+    "detection_surface": [
+      "Layer 7",
+      "attestation"
+    ],
+    "affected_layers": [
+      "Layer 7"
+    ],
+    "mitigation_layers": [
+      "Layer 7",
+      "Layer 8"
+    ],
+    "tested_by_sim": [
+      "SIM-040"
+    ],
+    "tested_by_harness": [
+      "HAR-020"
+    ],
+    "coverage_status": "partial",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-008",
+    "threat_class": "prompt_injection",
+    "description": "Adversarial prompts override safety or governance constraints.",
+    "severity": "medium",
+    "exploitability": "opportunistic",
+    "detection_surface": [
+      "Layer 2"
+    ],
+    "affected_layers": [
+      "Layer 2"
+    ],
+    "mitigation_layers": [
+      "Layer 2",
+      "Layer 4"
+    ],
+    "tested_by_sim": [
+      "SIM-001"
+    ],
+    "tested_by_harness": [
+      "HAR-002"
+    ],
+    "coverage_status": "full",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-009",
+    "threat_class": "specification_gaming",
+    "description": "Model satisfies literal constraints while violating intended semantics.",
+    "severity": "high",
+    "exploitability": "skilled",
+    "detection_surface": [
+      "Layer 4"
+    ],
+    "affected_layers": [
+      "Layer 4"
+    ],
+    "mitigation_layers": [
+      "Layer 4",
+      "Layer 5"
+    ],
+    "tested_by_sim": [
+      "SIM-012"
+    ],
+    "tested_by_harness": [],
+    "coverage_status": "none",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-010",
+    "threat_class": "governance_overflow",
+    "description": "COS receives too many governance events to process reliably.",
+    "severity": "medium",
+    "exploitability": "opportunistic",
+    "detection_surface": [
+      "COS logs"
+    ],
+    "affected_layers": [
+      "Layer 5"
+    ],
+    "mitigation_layers": [
+      "Layer 5",
+      "Layer 7"
+    ],
+    "tested_by_sim": [
+      "SIM-030"
+    ],
+    "tested_by_harness": [
+      "HAR-009"
+    ],
+    "coverage_status": "partial",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-011",
+    "threat_class": "drift_accumulation",
+    "description": "Small drift events accumulate into a major deviation.",
+    "severity": "high",
+    "exploitability": "opportunistic",
+    "detection_surface": [
+      "CARE drift vectors"
+    ],
+    "affected_layers": [
+      "Layer 1"
+    ],
+    "mitigation_layers": [
+      "Layer 1",
+      "Layer 6"
+    ],
+    "tested_by_sim": [
+      "SIM-004"
+    ],
+    "tested_by_harness": [
+      "HAR-010"
+    ],
+    "coverage_status": "full",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-012",
+    "threat_class": "latent_tool_discovery",
+    "description": "Model discovers or synthesizes new tools not anticipated by containment.",
+    "severity": "catastrophic",
+    "exploitability": "frontier_only",
+    "detection_surface": [
+      "Layer 3",
+      "Layer 6"
+    ],
+    "affected_layers": [
+      "Layer 3"
+    ],
+    "mitigation_layers": [
+      "Layer 6"
+    ],
+    "tested_by_sim": [
+      "SIM-050"
+    ],
+    "tested_by_harness": [
+      "HAR-SPEC-012"
+    ],
+    "coverage_status": "partial",
+    "examples": [
+      "Novel multi-step tool synthesis exceeding declared capability envelope"
+    ],
+    "references": [
+      "mythos-paper \u00a75.3",
+      "HAR-SPEC-012"
+    ],
+    "trace_refs": [
+      "probe_results_v01"
+    ]
+  },
+  {
+    "threat_id": "TM-013",
+    "threat_class": "cross_context_leakage",
+    "description": "Information leaks across sessions or contexts.",
+    "severity": "medium",
+    "exploitability": "skilled",
+    "detection_surface": [
+      "Layer 4"
+    ],
+    "affected_layers": [
+      "Layer 4"
+    ],
+    "mitigation_layers": [
+      "Layer 4",
+      "Layer 7"
+    ],
+    "tested_by_sim": [
+      "SIM-016"
+    ],
+    "tested_by_harness": [
+      "HAR-008"
+    ],
+    "coverage_status": "partial",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-014",
+    "threat_class": "model_inversion",
+    "description": "Adversary extracts training data or internal representations.",
+    "severity": "high",
+    "exploitability": "skilled",
+    "detection_surface": [
+      "Layer 6"
+    ],
+    "affected_layers": [
+      "Layer 6"
+    ],
+    "mitigation_layers": [
+      "Layer 6",
+      "Layer 7"
+    ],
+    "tested_by_sim": [
+      "SIM-021"
+    ],
+    "tested_by_harness": [
+      "HAR-014"
+    ],
+    "coverage_status": "partial",
+    "examples": [],
+    "references": []
+  },
+  {
+    "threat_id": "TM-015",
+    "threat_class": "governance_deadlock",
+    "description": "COS enters a state where no governance action can be taken.",
+    "severity": "high",
+    "exploitability": "skilled",
+    "detection_surface": [
+      "COS logs"
+    ],
+    "affected_layers": [
+      "Layer 5"
+    ],
+    "mitigation_layers": [
+      "Layer 5",
+      "Layer 7"
+    ],
+    "tested_by_sim": [
+      "SIM-032"
+    ],
+    "tested_by_harness": [],
+    "coverage_status": "none",
+    "examples": [],
+    "references": []
+  }
+]

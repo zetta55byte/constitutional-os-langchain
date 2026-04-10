@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mythos Compliance Checklist v1.0",
+  "description": "Self-assessment checklist for Mythos-Class compliance tiers",
+  "tiers": {
+    "registry_only": {
+      "description": "L5 only — consumable threat registry, no runtime enforcement",
+      "required": [
+        "threats.json present and schema-valid",
+        "All required threat fields present",
+        "validate.py passes with 0 errors",
+        "At least 5 threat entries",
+        "At least 1 SIM scenario wired"
+      ]
+    },
+    "starter_3layer": {
+      "description": "L3 + L4 + CMV — minimum viable containment posture",
+      "required": [
+        "All registry_only requirements",
+        "COS governance profile loaded and active",
+        "CARE monitor running with drift logging",
+        "CMV layer active with at least 2 models",
+        "HAR-SPEC-002 or HAR-SPEC-005 passing at calibrated thresholds",
+        "SER <= 0.05 on at least one T3 probe"
+      ]
+    },
+    "full_v01": {
+      "description": "All seven layers + v0.1 harness passing",
+      "required": [
+        "All starter_3layer requirements",
+        "All 8 containment layers implemented",
+        "M1-M5 membrane consensus operational",
+        "Out-of-band sentinel on separate machine",
+        "Append-only audit log with external storage",
+        "Cold-storage execution zone available",
+        "HAR-SPEC-002 PASS",
+        "HAR-SPEC-005 PASS",
+        "HAR-SPEC-012 PASS",
+        "TM-002, TM-005, TM-012 coverage_status >= partial",
+        "section7_numbers_calibrated.json present"
+      ]
+    },
+    "full_v11": {
+      "description": "All layers + expanded harness + public trace corpus",
+      "required": [
+        "All full_v01 requirements",
+        "TM-009 coverage_status >= partial",
+        "TM-015 coverage_status >= partial",
+        "HAR-SPEC-009 PASS",
+        "HAR-SPEC-015 PASS",
+        "Public trace corpus archived with DOI",
+        "All thresholds recalibrated from v0.1 empirical baselines"
+      ]
+    }
+  },
+  "invariants": {
+    "required_for_all_tiers": [
+      "Continuity: no state transition severs the audit chain",
+      "Non-contradiction: no two admitted deltas produce contradictory states",
+      "Human primacy (i_HP): all high-risk paths escalate to human operator",
+      "Escalation correctness: all above-threshold deviations routed correctly"
+    ]
+  }
+}

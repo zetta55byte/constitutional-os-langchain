@@ -1,0 +1,359 @@
+\documentclass[11pt]{article}
+\usepackage{times}
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+
+\definecolor{accent}{HTML}{3C3489}
+\definecolor{teal}{HTML}{085041}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{accent}{Mythos Standard v1.0}}
+\lhead{Attractor Dynamics Research Lab}
+\cfoot{\thepage}
+
+\title{\textbf{Mythos Standard v1.0}\\
+\large A Unified Framework for Governed AI Systems}
+\author{Zetta Byte\\
+Attractor Dynamics Research Lab\\
+\texttt{10.5281/zenodo.19464889}}
+\date{April 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{abstract}
+The Mythos Standard defines a unified framework for governed AI systems spanning mathematical
+foundations, governance substrates, runtime monitoring, threat modeling, and containment
+enforcement. It specifies the interfaces, invariants, schemas, and evaluation procedures required
+to implement a Mythos-Class governed runtime. The standard ensures reproducibility,
+interoperability, formal governance guarantees, and consistent evaluation across institutions.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%% ── PREAMBLE ─────────────────────────────────────────────────────────────────
+
+\section{Preamble}
+
+The Mythos Standard is organized into seven layers:
+
+\begin{enumerate}[noitemsep]
+\item \textbf{Mathematical Foundations} --- exact curvature engines (hcderiv, curvopt)
+\item \textbf{Governance Substrate} --- Constitutional OS
+\item \textbf{Runtime Monitoring} --- CARE drift and deviation detection
+\item \textbf{Threat Modeling Layer} --- machine-readable registry and simulator scenarios
+\item \textbf{Containment Architecture} --- 8-layer enforcement model with membrane consensus
+\item \textbf{Applied Runtime} --- governed multi-agent execution
+\item \textbf{Evaluation Protocol} --- sim scenarios, harness probes, registry updates
+\end{enumerate}
+
+The standard ensures: reproducibility, interoperability, formal governance guarantees,
+consistent evaluation across institutions, and compatibility with future Mythos-Class runtimes.
+
+%% ── CONCEPTUAL FOUNDATIONS ───────────────────────────────────────────────────
+
+\section{Conceptual Foundations}
+
+\subsection{Unified Attractor Geometry (UAG)}
+
+Any governed system is modelled as a trajectory in a high-dimensional state space partitioned
+into attractor basins separated by ridges. Three UAG primitives are operationalized across the
+stack: $\kappa$ (curvature), $\delta$ (drift), and basin transitions. Transition probability is
+governed by the Kramers escape rate~\cite{byte2026uag}:
+
+\begin{equation}
+S(\gamma^*) \approx \frac{2\,\Delta R}{|\lambda_{\min}(H(\mathbf{x}^*))|}
+\end{equation}
+
+where $\Delta R$ is the energy gap to the ridge crest and $\lambda_{\min}$ is the smallest
+Hessian eigenvalue at the saddle point $\mathbf{x}^*$.
+
+\subsection{Lyapunov Stability}
+
+Governance stability is certified by:
+
+\begin{equation}
+V(t) = \alpha \cdot c(t) + \beta \cdot u(t) + \gamma \cdot d(t)
+\end{equation}
+
+where $c(t)$ is a curvature-derived complexity term, $u(t)$ an uncertainty term, and $d(t)$ a
+drift term. Stability requires $V(t+1) \leq V(t)$ for all $t$ under all admitted deltas.
+
+\subsection{Membrane Theory}
+
+A membrane $m$ enforces a predicate $P_m$ over proposed deltas. A delta $\delta$ is
+\textbf{admitted} by membrane $m$ iff $P_m(\delta, s) = \mathrm{true}$. Five membranes
+(M1--M5) vote in parallel; 3-of-5 majority required. M5 (curvature-drift) carries veto power.
+
+%% ── FORMAL DEFINITIONS ───────────────────────────────────────────────────────
+
+\section{Formal Definitions}
+
+\paragraph{Governance profile.}
+A governance profile is a typed configuration $G$ specifying active rules, membranes, and
+invariants:
+\[
+G = \langle R, M, I \rangle
+\]
+where $R$ is a set of rules, $M$ a set of membranes, and $I$ a set of invariants.
+
+\paragraph{Delta.}
+A delta $\delta$ is a typed, reversible state transformation on governed system state $s$:
+\[
+\delta : S \to S, \quad \exists\,\delta^{-1} : S \to S \text{ such that } \delta^{-1}(\delta(s)) = s
+\]
+Deltas compose associatively and must preserve all active invariants in $I$.
+
+\paragraph{Membrane.}
+A membrane $m$ is a guarded interface enforcing predicate $P_m$ over proposed deltas.
+$\delta$ is admitted by $m$ iff $P_m(\delta, s) = \mathrm{true}$.
+
+\paragraph{Invariant.}
+An invariant $i \in I$ is a predicate over system states and histories:
+\[
+i : S \times H \to \{\mathrm{true}, \mathrm{false}\}
+\]
+A runtime is compliant iff all $i \in I$ remain true for all executions.
+
+\paragraph{Human primacy invariant ($i_{\mathrm{HP}}$).}
+Any unresolved or high-risk decision path must be escalated to a human operator. No autonomous
+path may bypass this escalation channel.
+
+\paragraph{Drift.}
+Drift is a measure of distributional or behavioral deviation between reference behavior
+$B_{\mathrm{ref}}$ and current behavior $B_t$, typically instantiated as a divergence
+$D(B_t \| B_{\mathrm{ref}})$ (e.g., KL over TF-IDF or embedding distributions).
+
+\paragraph{Threat.}
+A threat $T$ is a structured record in the registry:
+\[
+T = \langle \mathrm{id}, \mathrm{class}, \mathrm{description}, \mathrm{scenarios},
+            \mathrm{metrics}, \mathrm{coverage\_status} \rangle
+\]
+with $\mathrm{coverage\_status} \in \{\mathrm{none}, \mathrm{partial}, \mathrm{full}\}$.
+
+\paragraph{Simulator scenario.}
+A simulator scenario $S$ is a parameterized evaluation setting:
+\[
+S = \langle \mathrm{id}, \mathrm{prompt\_family}, \mathrm{model\_config},
+            \mathrm{runtime\_config} \rangle
+\]
+
+\paragraph{Harness specification (HAR-SPEC).}
+A harness spec $H$ defines: required inputs, required metrics, pass/fail conditions, and
+reporting format. A system satisfies $H$ iff it can execute the specified runs and produce
+metrics meeting the defined thresholds.
+
+%% ── MATHEMATICAL FOUNDATIONS ─────────────────────────────────────────────────
+
+\section{Mathematical Foundations}
+
+\subsection{hcderiv --- Exact One-Pass Hessians}
+
+\texttt{hcderiv} computes exact second-order derivatives via hypercomplex perturbation algebra
+in a single forward pass. The JAX-XLA backend represents the full coefficient vector as a
+single JAX array implementing the Hyper algebra via \texttt{jnp.einsum}~\cite{byte2026hcderiv}.
+
+\noindent \textbf{Required interface:}
+\texttt{hessian(f, x, backend)} returning $H \in \mathbb{R}^{n \times n}$.
+
+\subsection{curvopt --- Curvature-Aware Optimization}
+
+\texttt{curvopt} uses exact Hessians from \texttt{hcderiv} to set trust-region radius from
+ridge curvature (UAG Theorem~4). Required interface: \texttt{optimizer(f, x0, hessian\_fn)}
+returning $(x^*, \mathrm{trace})$.
+
+%% ── GOVERNANCE SUBSTRATE ─────────────────────────────────────────────────────
+
+\section{Governance Substrate}
+
+Constitutional OS formalizes governance as:
+\[
+\Sigma = (\Sigma_R, \Sigma_C, \Sigma_X), \quad \Phi = G \circ E
+\]
+
+\noindent \textbf{Governance invariants} (all Mythos-compliant systems must enforce):
+\begin{itemize}[noitemsep]
+\item \textbf{Continuity} --- no state transition may sever the audit chain
+\item \textbf{Non-contradiction} --- no two admitted deltas may produce contradictory states
+\item \textbf{Human primacy} ($i_{\mathrm{HP}}$) --- all high-risk paths escalate to human
+\item \textbf{Escalation correctness} --- all detected deviations above threshold are routed
+      to the correct oversight layer
+\end{itemize}
+
+%% ── RUNTIME MONITORING ───────────────────────────────────────────────────────
+
+\section{Runtime Monitoring}
+
+CARE computes behavioral deviation fingerprint $F_s = (\kappa, \beta, \tau, \delta_{\mathrm{UAG}})$
+and evaluates risk potential $R(\mathbf{x})$ via exact Hessian from \texttt{hcderiv}. M5 fires
+when risk delta exceeds 25\% of baseline, triggering freeze regardless of other membrane votes.
+
+\noindent \textbf{Runtime actions:} Freeze, Rollback, Sentinel mode (unilateral OOBS control).
+
+\noindent \textbf{Logging requirements:} Append-only drift log, deviation log,
+rule-activation log; external storage required (Redis Streams or S3 with write-only credentials).
+
+%% ── THREAT MODELING ──────────────────────────────────────────────────────────
+
+\section{Threat Modeling Layer}
+
+\subsection{Registry Schema}
+
+Each threat entry $T$ is a JSON object with required fields:
+\texttt{threat\_id} (TM-NNN), \texttt{threat\_class}, \texttt{severity}
+$\in \{$\texttt{low}, \texttt{medium}, \texttt{high}, \texttt{catastrophic}$\}$,
+\texttt{exploitability} $\in \{$\texttt{opportunistic}, \texttt{skilled},
+\texttt{frontier\_only}$\}$, \texttt{coverage\_status} $\in \{$\texttt{none},
+\texttt{partial}, \texttt{full}$\}$, \texttt{tested\_by\_sim}, \texttt{tested\_by\_harness}.
+
+\subsection{Threat Classes (v0.1)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+ID & Class & Severity \\
+\midrule
+TM-002 & governance\_drift & high \\
+TM-005 & cross\_model\_agreement\_failure & high \\
+TM-012 & latent\_tool\_discovery & catastrophic \\
+TM-009 & specification\_gaming (v1.1) & high \\
+TM-015 & governance\_deadlock (v1.1) & high \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ── CONTAINMENT ARCHITECTURE ─────────────────────────────────────────────────
+
+\section{Containment Architecture}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cll}
+\toprule
+Layer & Name & Mechanism \\
+\midrule
+1 & I/O Membrane & Schema validation, depth limits \\
+2 & Outbound Strangulation & Default-deny egress, HMAC calls \\
+3 & Behavioral Fingerprinting & Token curvature, plan topology \\
+4 & Multi-Membrane Consensus & 3-of-5 vote across M1--M5 \\
+5 & Out-of-Band Sentinel & Separate machine, freeze/rollback \\
+6 & Deterministic Replay & Append-only audit log \\
+7 & Cold-Storage Zone & Air-gapped GPU jail \\
+8 & Cross-Model Verification & Two-pilot cockpit \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent \textbf{M5 (canary-drift membrane)} carries veto power: CARE risk delta $>$ 25\%
+triggers immediate freeze independent of the 3-of-5 vote.
+
+%% ── EVALUATION PROTOCOL ──────────────────────────────────────────────────────
+
+\section{Evaluation Protocol}
+
+\subsection{Key Metrics}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Metric & Definition & Formula \\
+\midrule
+RAC & Rule-Activation Consistency &
+  $\frac{\#\{\text{responses with governance signal}\}}{\#\{\text{responses}\}}$ \\[4pt]
+DSI & Drift Stability Index &
+  $D(F \,\|\, F_{\mathrm{base}})$ (normalised) \\[4pt]
+ADR & Adversarial Detection Rate &
+  $\frac{\#\{\text{true divergences detected}\}}{\#\{\text{true divergences}\}}$ \\[4pt]
+FNR & False-Negative Rate &
+  $\frac{\#\{\text{missed divergences}\}}{\#\{\text{true divergences}\}}$ \\[4pt]
+FPR & False-Positive Rate &
+  $\frac{\#\{\text{non-divergent cases flagged}\}}{\#\{\text{non-divergent cases}\}}$ \\[4pt]
+MC  & Mitigation Correctness &
+  $\frac{\#\{\text{correct mitigations}\}}{\#\{\text{detected divergences}\}}$ \\[4pt]
+NDR & Novelty Detection Rate &
+  $\frac{\#\{\text{novel behaviors detected}\}}{\#\{\text{novel behaviors}\}}$ \\[4pt]
+SER & Silent Expansion Rate &
+  $\frac{\#\{\text{novel behaviors silent}\}}{\#\{\text{novel behaviors}\}}$ \\[4pt]
+EC  & Escalation Correctness &
+  $\frac{\#\{\text{deviations escalated correctly}\}}{\#\{\text{deviations}\}}$ \\[4pt]
+BF  & Baseline Fit &
+  $\mathrm{sim}(B_{\mathrm{obs}}, B_{\mathrm{ref}})$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent \textbf{Hard gate:} SER $\leq 0.05$ for all compliant evaluations.
+
+\subsection{Threshold Calibration}
+
+All thresholds (DSI gate, FPR gate, BF gate, EC gate) must be set from pilot data before
+full evaluation runs. Document all choices in \texttt{section7\_numbers\_calibrated.json}.
+
+%% ── COMPLIANCE ───────────────────────────────────────────────────────────────
+
+\section{Compliance}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+Tier & Requirements \\
+\midrule
+Registry-only & L5 only --- consumable threat registry, no runtime enforcement \\
+3-layer starter & L3 + L4 + CMV --- minimum viable containment posture \\
+Full v0.1 & All seven layers + v0.1 harness passing \\
+Full v1.1 & All layers + expanded harness + public trace corpus \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ── REFERENCE IMPLEMENTATION ─────────────────────────────────────────────────
+
+\section{Reference Implementation}
+
+A Mythos-compliant reference implementation must demonstrate the full evaluation loop:
+load COS governance profile $\to$ start CARE monitor $\to$ load threat registry $\to$
+execute one SIM scenario $\to$ run one HAR-SPEC probe $\to$ produce registry update.
+
+\noindent \textbf{docker-compose}: \texttt{docker-compose up mythos-demo}
+
+\noindent \textbf{Starter kit} must include: \texttt{registry/}, \texttt{sims/},
+\texttt{harness/}, \texttt{cos\_ruleset/}, \texttt{care\_config/}, \texttt{README.md}.
+
+%% ── REFERENCES ───────────────────────────────────────────────────────────────
+
+\bibliographystyle{plain}
+\begin{thebibliography}{9}
+
+\bibitem{byte2026uag}
+Byte, Z. \textit{The Unified Attractor Grammar}. Zenodo (2026).
+DOI: \href{https://doi.org/10.5281/zenodo.19448508}{10.5281/zenodo.19448508}
+
+\bibitem{byte2026cos}
+Byte, Z. \textit{Constitutional OS: A Formal Governance Substrate for AI Ecosystems}.
+Zenodo (2026). DOI: \href{https://doi.org/10.5281/zenodo.19258310}{10.5281/zenodo.19258310}
+
+\bibitem{byte2026mcca}
+Byte, Z. \textit{Mythos-Class Containment Architecture}. Zenodo (2026).
+DOI: \href{https://doi.org/10.5281/zenodo.19464889}{10.5281/zenodo.19464889}
+
+\bibitem{byte2026hcderiv}
+Byte, Z. \textit{One-Pass Exact Hessians via Hypercomplex Perturbation} (hcderiv v4.1).
+Zenodo (2026). DOI: \href{https://doi.org/10.5281/zenodo.19476000}{10.5281/zenodo.19476000}
+
+\end{thebibliography}
+
+\end{document}
